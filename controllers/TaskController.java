@@ -1,4 +1,51 @@
 package com.cl.demo.controllers;
 
+import com.cl.demo.entities.Task;
+import com.cl.demo.requestobjects.TaskCreateRequest;
+import com.cl.demo.requestobjects.TaskUpdateRequest;
+import com.cl.demo.responseobjects.TaskCreateResponse;
+import com.cl.demo.responseobjects.TaskUpdateResponse;
+import com.cl.demo.services.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("task")
 public class TaskController {
+
+    @Autowired
+    public TaskService taskService;
+
+    @PostMapping("add")
+    public Map<String, String> addTask(
+            @RequestBody TaskCreateRequest task) {
+
+        return taskService.addTask(task);
+    }
+    @GetMapping("getById")
+    public TaskCreateResponse getTaskById(
+            @RequestParam String uuid) {
+        Task task = taskService.getTaskById(uuid);
+        return TaskCreateResponse.convert(task);
+    }
+
+    @GetMapping("getAll")
+    public List<TaskCreateResponse> getAllTasks() {
+        return TaskCreateResponse.convert(
+                taskService.getAllTasks()
+        );
+    }
+    @PutMapping("update")
+    public TaskUpdateResponse updateTask(@RequestBody TaskUpdateRequest updateObj) {
+        Task task = taskService.updateTask(updateObj);
+        return TaskUpdateResponse.convert(task);
+    }
+
+    @DeleteMapping("deleteById")
+    public Boolean deleteTaskById(@RequestParam String id) {
+        return taskService.deleteById(id);
+    }
 }
