@@ -32,7 +32,7 @@ public class TaskController {
         return TaskCreateResponse.convert(task);
     }
 
-    @GetMapping("getAll")
+    @GetMapping(" getAll ")
     public List<TaskCreateResponse> getAllTasks() {
         return TaskCreateResponse.convert(
                 taskService.getAllTasks()
