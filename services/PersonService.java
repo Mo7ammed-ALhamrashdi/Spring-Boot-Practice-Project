@@ -6,12 +6,18 @@ import com.cl.demo.entities.UserName;
 import com.cl.demo.requestobjects.PersonCreateRequest;
 import com.cl.demo.requestobjects.PersonUpdateRequest;
 import com.cl.demo.utils.HelperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.cl.demo.requestobjects.PhoneNumberCreateRequest;
+
 
 import java.util.*;
-
+import com.cl.demo.services.PhoneNumberService;
+import com.cl.demo.requestobjects.PhoneNumberCreateRequest;
 @Service
 public class PersonService {
+    @Autowired
+    public PhoneNumberService phoneNumberService;
 
     public static final String PERSON_USERNAME_OR_EMAIL_ALREADY_TAKEN = "Given username or email is already taken";
     public static final String PERSON_SAVED = "Person saved";
@@ -37,15 +43,19 @@ public class PersonService {
         person.setName(getFullName(requestObj));
         person.setEmail(requestObj.getPersonEmail());
 
-        //TODO: Add Phone Number Logic in PhoneNumber Service
+        PhoneNumberCreateRequest phoneRequest = new PhoneNumberCreateRequest();
+        phoneRequest.setCountryCode(requestObj.getPersonCountryCode()
+        );
+        phoneRequest.setPhoneNumber(requestObj.getPersonPhoneNumber()
+        );
+        person.setPhoneNumber(phoneNumberService.addPhoneNumber(phoneRequest)
+        );
         Boolean result = DemoApplication.Person_List.add(person);
-
         if (result) {
             response.put("response", PERSON_SAVED);
         }
         return response;
     }
-
     public Person getPersonById(String uuid) {
         for (Person p : DemoApplication.Person_List) {
             if (p.getId().toString().equals(uuid) && p.getIsActive() != false) {
@@ -54,17 +64,14 @@ public class PersonService {
         }
         return new Person();
     }
-
     public Person updatePerson(PersonUpdateRequest updateObj) {
         Person person = getPersonById(updateObj.getUuid());
         if (person == null || person.getId() == null || !person.getIsActive()) {
             return person;
         }
         DemoApplication.Person_List.remove(person);
-
         person.setUserName(getUserNameByCompare(person.getUserName(), updateObj));
         person.setEmail(HelperUtils.compare(person.getEmail(), updateObj.getEmailToUpdate()));
-
         DemoApplication.Person_List.add(person);
         return person;
     }
@@ -78,20 +85,17 @@ public class PersonService {
         }
         return resultList;
     }
-
     public Boolean verifyUserNameAndEmail(String userName, String email) {
         if (!DemoApplication.emails.add(email) || !DemoApplication.userNames.add(userName)) {
             return false;
         }
         return true;
     }
-
     public String getFullName(PersonCreateRequest request) {
         return request.getPersonFirstName() + " " +
                 request.getPersonMiddleName() + " " +
                 request.getPersonLastName();
     }
-
     private UserName getUserNameByCompare(UserName currentUserNameObj, PersonUpdateRequest updateRequest) {
         String userNameToUpdate = HelperUtils.compare(currentUserNameObj.getActiveUserName(),
                 updateRequest.getUserNameToUpdate());
