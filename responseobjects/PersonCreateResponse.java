@@ -17,19 +17,30 @@ public class PersonCreateResponse {
     String phoneNumber;
 
     public static PersonCreateResponse convert(Person person) {
+        if (person == null || person.getId() == null) {
+            return null;
+        }
         PersonCreateResponse response = new PersonCreateResponse();
         response.setPersonId(person.getId().toString());
         response.setFullName(person.getName());
-        response.setUserName(person.getUserName().getActiveUserName());
+        if (person.getUserName() != null) {
+
+            response.setUserName(
+                    person.getUserName().getActiveUserName()
+            );
+        }
         response.setEmail(person.getEmail());
-        //response.setPhoneNumber(person.getPhoneNumber().toString());
+        if (person.getPhoneNumber() != null) {
+            response.setPhoneNumber(person.getPhoneNumber().getCountryCode() + " " + person.getPhoneNumber().getPhoneNumber()
+            );
+        }
         return response;
     }
-
     public static List<PersonCreateResponse> convert(List<Person> personList) {
         List<PersonCreateResponse> responseList = new ArrayList<>();
-        for (Person p : personList) {
-            responseList.add(convert(p));
+        for (Person person : personList) {PersonCreateResponse response = convert(person);
+            if (response != null) {responseList.add(response);
+            }
         }
         return responseList;
     }
