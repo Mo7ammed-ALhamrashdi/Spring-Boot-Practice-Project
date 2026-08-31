@@ -5,15 +5,14 @@ import com.cl.demo.entities.Person;
 import com.cl.demo.entities.UserName;
 import com.cl.demo.requestobjects.PersonCreateRequest;
 import com.cl.demo.requestobjects.PersonUpdateRequest;
+import com.cl.demo.requestobjects.PhoneNumberCreateRequest;
 import com.cl.demo.utils.HelperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.cl.demo.requestobjects.PhoneNumberCreateRequest;
 
 
 import java.util.*;
-import com.cl.demo.services.PhoneNumberService;
-import com.cl.demo.requestobjects.PhoneNumberCreateRequest;
+
 @Service
 public class PersonService {
     @Autowired
@@ -96,10 +95,9 @@ public class PersonService {
                 request.getPersonMiddleName() + " " +
                 request.getPersonLastName();
     }
-    private UserName getUserNameByCompare(UserName currentUserNameObj, PersonUpdateRequest updateRequest) {
+    private UserName getUserNameByCompare( UserName currentUserNameObj,PersonUpdateRequest updateRequest) {
         String userNameToUpdate = HelperUtils.compare(currentUserNameObj.getActiveUserName(),
                 updateRequest.getUserNameToUpdate());
-        UserName userName = new UserName();
         if (DemoApplication.userNames.add(userNameToUpdate) == true) {
 
             List<String> userNameHistory = currentUserNameObj.getPrevUserNames();
@@ -107,6 +105,7 @@ public class PersonService {
                 userNameHistory = new ArrayList<>();
             }
             userNameHistory.add(currentUserNameObj.getActiveUserName());
+
 
             currentUserNameObj.setPrevUserNames(userNameHistory);
             currentUserNameObj.setActiveUserName(updateRequest.getUserNameToUpdate());
